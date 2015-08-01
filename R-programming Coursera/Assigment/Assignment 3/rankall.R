@@ -15,27 +15,39 @@ rankall <- function(outcome, num="best"){
     ## because we import the table as character we need to convert it back
     ## to numeric in able to sort the data
     statedata[,3]<-as.numeric(statedata[,3])
-    ## now we sort the row ASCENDINGLY
-    ## we adjusting the sorting method considering the value of num
+    ## now we sort the row ASCENDINGLY base on State 
+    ## and the value of outcome column
     newstatedata <- statedata[order(statedata[,2],statedata[,3], na.last = NA),]
+    ## we set the value of the object index based on the input of outcome
+    ## that will be use later on to pick out the row
     if (class(num)!= "numeric") { 
         index <-1
     } else {
         index <- num
     }
+    ## create an empty data frame called finalframe
     finalframe <- data.frame()
+    ## compose a full list of states
     fullstatelist <- sort(c("DC","GU","PR","VI",state.abb))
+    ## for every value in the state list
     for (namestate in fullstatelist){
+ 	## pick out the row number that has the same state value
         rowwithState <- grep(namestate, newstatedata[,2])
+	## now pull out those rows in our data frame
         finalcheck <- newstatedata[rowwithState,]
+	## we adjusting the sorting method considering the value of num
         if (num == "worst"){
+	    ## this will sort the list DESCENDINGLY so the worst value is first
             finalcheck <- finalcheck[order(-finalcheck[,3],finalcheck[,1]),]
         } else {
+	    ## this will sort the list DESCENDINGLY so the best value is first
             finalcheck <- finalcheck[order(finalcheck[,3],finalcheck[,1]),]
         }
+	## now we get the data base on the index
         finalframe<- rbind(finalframe,finalcheck[index,])
     }
     finalframe <- cbind.data.frame(finalframe[,1], fullstatelist)
+    ## changing the column num so it is easier to read
     colnames(finalframe) <- c("hospital","state")
     finalframe
 }
